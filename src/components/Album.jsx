@@ -15,7 +15,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import { IconButton, Modal, Paper, TextField } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { PhotoCamera, PhotoCameraBack } from '@mui/icons-material';
+import TodoModal from './TodoModal';
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
@@ -29,11 +32,69 @@ function Copyright() {
   );
 }
 
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const testTodo = {
+  id: 1,
+  title: 'make todo app',
+  description: 'clean code',
+  expDate: '11.12.2022',
+  files: 'file url',
+};
+
+const cards = [
+  {
+    id: 1,
+    title: 'make todo app',
+    description: 'clean code',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+  {
+    id: 2,
+    title: 'make todo app',
+    description:
+      'clean code Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos, harum iure illum velit atque quos nisi. Doloremque facere adipisci porro! Fugiat corrupti, assumenda, itaque rem enim amet delectus alias laudantium at doloremque voluptatum vel dolorum accusamus, aperiam suscipit facere? ',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+  {
+    id: 3,
+    title: 'make todo app',
+    description: 'clean code',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+  {
+    id: 4,
+    title: 'make todo app',
+    description: 'clean code',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+  {
+    id: 5,
+    title: 'make todo app',
+    description: 'clean code',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+  {
+    id: 6,
+    title: 'make todo app',
+    description: 'clean code',
+    expDate: '11.12.2022',
+    files: 'file url',
+  },
+];
 
 const theme = createTheme();
 
 export default function Album() {
+  const [inputTodo, setInputTodo] = React.useState('');
+  const handleChange = (event) => {
+    setInputTodo(event.target.value);
+  };
+  const handleAddTodo = () => {};
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -62,8 +123,26 @@ export default function Album() {
               color="text.primary"
               gutterBottom
             >
-              Album layout
+              Todo App
             </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <TextField
+                id="outlined-basic"
+                label="Что будем делать?"
+                variant="outlined"
+                value={inputTodo}
+                onChange={handleChange}
+                fullWidth
+              />
+              <Button
+                onClick={handleAddTodo}
+                variant="contained"
+                startIcon={<AddIcon />}
+              >
+                Добавить
+              </Button>
+            </Box>
+
             {/* <Typography
               variant="h5"
               align="center"
@@ -89,7 +168,7 @@ export default function Album() {
           {/* End hero unit */}
           <Grid container spacing={4}>
             {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+              <Grid item key={card.id} xs={12} sm={6} md={4}>
                 <Card
                   sx={{
                     height: '100%',
@@ -97,27 +176,46 @@ export default function Album() {
                     flexDirection: 'column',
                   }}
                 >
-                  <CardMedia
+                  {/* <CardMedia
                     component="img"
                     sx={{
+                      // display: 'none',
                       // 16:9
-                      pt: '56.25%',
+                      // pt: '56.25%',
                     }}
                     image="https://picsum.photos/100"
                     alt="random"
-                  />
+                  /> */}
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Heading
+                    <Typography gutterBottom variant="h4" component="h2">
+                      {card.title}
                     </Typography>
-                    <Typography>
-                      This is a media card. You can use this section to describe
-                      the content.
+                    <Typography gutterBottom variant="h6">
+                      Сделать до: {card.expDate}
                     </Typography>
+                    <Typography>{card.description}</Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
+                    <TodoModal ></TodoModal>
+                    <Button size="small" sx={{ m: 2 }}>
+                      Delete
+                    </Button>
+                    <Button
+                      size="small"
+                      sx={{ mr: 2 }}
+                      component="label"
+                    >
+                      Upload
+                      <input hidden accept="image/*" multiple type="file" />
+                    </Button>
+                    {/* <IconButton
+                      color="primary"
+                      aria-label="upload picture"
+                      component="label"
+                    >
+                      <input hidden accept="image/*" type="file" />
+                      <PhotoCameraBack />
+                    </IconButton> */}
                   </CardActions>
                 </Card>
               </Grid>
