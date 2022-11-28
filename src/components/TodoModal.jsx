@@ -4,6 +4,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
+import TodoDatePicker from './TodoDatePicker';
+import dayjs from 'dayjs';
 
 const style = {
   position: 'absolute',
@@ -22,7 +24,7 @@ const style = {
 export default function BasicModal({ open, handleClose }) {
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
-  const [expDate, setExpDate] = React.useState('');
+  const [expDate, setExpDate] = React.useState(dayjs('2022-12-31'));
 
   const handleTitle = () => {};
 
@@ -57,17 +59,15 @@ export default function BasicModal({ open, handleClose }) {
             onChange={handleDescription}
             fullWidth
           />
-          <TextField
-            id="modal-modal-description"
-            sx={{ mt: 1, mb: 2 }}
-            label="Дата завершения"
-            variant="outlined"
-            value={expDate}
-            onChange={handleExpDate}
+          <TodoDatePicker expDate={expDate} setExpDate={setExpDate} />
+          <Button
+            sx={{ mt: '16px' }}
             fullWidth
-          />
-          <Button fullWidth size="small" variant="contained" component="label">
-            Upload
+            size="small"
+            variant="contained"
+            component="label"
+          >
+            Загрузить файл
             <input hidden multiple type="file" />
           </Button>
           <Button
