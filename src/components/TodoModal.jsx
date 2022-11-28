@@ -15,16 +15,23 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  display: 'flex',
+  flexDirection: 'column',
 };
 
-export default function BasicModal() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+export default function BasicModal({ open, handleClose }) {
+  const [title, setTitle] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [expDate, setExpDate] = React.useState('');
+
+  const handleTitle = () => {};
+
+  const handleDescription = () => {};
+
+  const handleExpDate = () => {};
 
   return (
     <div>
-      <Button onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -37,8 +44,8 @@ export default function BasicModal() {
             sx={{ mt: 1, mb: 2 }}
             label="Заголовок"
             variant="outlined"
-            value={''}
-            onChange={() => {}}
+            value={title}
+            onChange={handleTitle}
             fullWidth
           />
           <TextField
@@ -46,8 +53,8 @@ export default function BasicModal() {
             sx={{ mt: 1, mb: 2 }}
             label="Описание"
             variant="outlined"
-            value={''}
-            onChange={() => {}}
+            value={description}
+            onChange={handleDescription}
             fullWidth
           />
           <TextField
@@ -55,13 +62,13 @@ export default function BasicModal() {
             sx={{ mt: 1, mb: 2 }}
             label="Дата завершения"
             variant="outlined"
-            value={''}
-            onChange={() => {}}
+            value={expDate}
+            onChange={handleExpDate}
             fullWidth
           />
           <Button fullWidth size="small" variant="contained" component="label">
             Upload
-            <input hidden accept="image/*" multiple type="file" />
+            <input hidden multiple type="file" />
           </Button>
           <Button
             sx={{ mt: 4 }}

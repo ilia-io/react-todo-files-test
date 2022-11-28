@@ -52,7 +52,7 @@ const cards = [
     id: 2,
     title: 'make todo app',
     description:
-      'clean code Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eos, harum iure illum velit atque quos nisi. Doloremque facere adipisci porro! Fugiat corrupti, assumenda, itaque rem enim amet delectus alias laudantium at doloremque voluptatum vel dolorum accusamus, aperiam suscipit facere? ',
+      'clean code Lorem ipsum dolor sit',
     expDate: '11.12.2022',
     files: 'file url',
   },
@@ -93,7 +93,13 @@ export default function Album() {
   const handleChange = (event) => {
     setInputTodo(event.target.value);
   };
-  const handleAddTodo = () => {};
+  const handleAddTodo = () => {
+    handleOpen();
+  };
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <ThemeProvider theme={theme}>
@@ -125,15 +131,7 @@ export default function Album() {
             >
               Todo App
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <TextField
-                id="outlined-basic"
-                label="Что будем делать?"
-                variant="outlined"
-                value={inputTodo}
-                onChange={handleChange}
-                fullWidth
-              />
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button
                 onClick={handleAddTodo}
                 variant="contained"
@@ -141,6 +139,7 @@ export default function Album() {
               >
                 Добавить
               </Button>
+              <TodoModal open={open} handleClose={handleClose}></TodoModal>
             </Box>
 
             {/* <Typography
@@ -196,18 +195,11 @@ export default function Album() {
                     <Typography>{card.description}</Typography>
                   </CardContent>
                   <CardActions>
-                    <TodoModal ></TodoModal>
+                    <Button onClick={handleOpen}>Edit</Button>
                     <Button size="small" sx={{ m: 2 }}>
                       Delete
                     </Button>
-                    <Button
-                      size="small"
-                      sx={{ mr: 2 }}
-                      component="label"
-                    >
-                      Upload
-                      <input hidden accept="image/*" multiple type="file" />
-                    </Button>
+                    {/* //TODO отображение файла */}
                     {/* <IconButton
                       color="primary"
                       aria-label="upload picture"
