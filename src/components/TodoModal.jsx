@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -6,6 +5,7 @@ import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 
 const style = {
   position: 'absolute',
@@ -21,22 +21,31 @@ const style = {
   flexDirection: 'column',
 };
 
-export default function BasicModal({ open, handleClose }) {
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [expDate, setExpDate] = React.useState(dayjs('2022-12-31'));
+export default function BasicModal({
+  open,
+  handleCloseModal,
+  handleAddTodo,
+  todo,
+}) {
+  const [title, setTitle] = useState(todo.title);
+  const [description, setDescription] = useState(todo.description);
+  const [expDate, setExpDate] = useState(dayjs(todo.expDate));
+  // const handleTitle = () => {};
 
-  const handleTitle = () => {};
+  // const handleDescription = () => {};
 
-  const handleDescription = () => {};
+  // const handleExpDate = () => {};
 
-  const handleExpDate = () => {};
+  const handleSave = () => {
+    handleAddTodo(todo);
+    handleCloseModal();
+  };
 
   return (
     <div>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -47,7 +56,7 @@ export default function BasicModal({ open, handleClose }) {
             label="Заголовок"
             variant="outlined"
             value={title}
-            onChange={handleTitle}
+            onChange={(e) => setTitle(e.target.value)}
             fullWidth
           />
           <TextField
@@ -56,7 +65,7 @@ export default function BasicModal({ open, handleClose }) {
             label="Описание"
             variant="outlined"
             value={description}
-            onChange={handleDescription}
+            onChange={(e) => setDescription(e.target.value)}
             fullWidth
           />
           <TodoDatePicker expDate={expDate} setExpDate={setExpDate} />
@@ -72,7 +81,7 @@ export default function BasicModal({ open, handleClose }) {
           </Button>
           <Button
             sx={{ mt: 4 }}
-            onClick={() => {}}
+            onClick={handleSave}
             variant="contained"
             startIcon={''}
           >
