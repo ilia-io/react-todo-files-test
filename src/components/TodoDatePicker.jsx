@@ -7,8 +7,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/ru';
 
 export default function BasicDatePicker({ expDate, setExpDate }) {
-  const [value, setValue] = React.useState(expDate);
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
       <DatePicker

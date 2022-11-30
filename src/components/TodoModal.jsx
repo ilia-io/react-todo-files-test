@@ -5,7 +5,8 @@ import Modal from '@mui/material/Modal';
 import { TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const style = {
   position: 'absolute',
@@ -24,23 +25,17 @@ const style = {
 export default function BasicModal({
   open,
   handleCloseModal,
-  handleAddTodo,
-  todo,
+  btnName,
+  handleAction,
+  title,
+  description,
+  expDate,
+  files,
+  setTitle,
+  setDescription,
+  setExpDate,
+  setFiles,
 }) {
-  const [title, setTitle] = useState(todo.title);
-  const [description, setDescription] = useState(todo.description);
-  const [expDate, setExpDate] = useState(dayjs(todo.expDate));
-  // const handleTitle = () => {};
-
-  // const handleDescription = () => {};
-
-  // const handleExpDate = () => {};
-
-  const handleSave = () => {
-    handleAddTodo(todo);
-    handleCloseModal();
-  };
-
   return (
     <div>
       <Modal
@@ -81,11 +76,13 @@ export default function BasicModal({
           </Button>
           <Button
             sx={{ mt: 4 }}
-            onClick={handleSave}
+            onClick={() => {
+              handleAction();
+            }}
             variant="contained"
             startIcon={''}
           >
-            Сохранить
+            {btnName}
           </Button>
         </Box>
       </Modal>

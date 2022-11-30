@@ -15,28 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import TodoModal from './TodoModal';
 import { db } from '../firebase';
-import { onValue, ref, set } from 'firebase/database';
-import dayjs from 'dayjs';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  deleteTodos,
-  fetchTodos,
-  postTodos,
-  putTodos,
-} from '../redux/asyncActions';
-
-// function Copyright() {
-//   return (
-//     <Typography variant="body2" color="text.secondary" align="center">
-//       {'Copyright © '}
-//       <Link color="inherit" href="https://mui.com/">
-//         Your Website
-//       </Link>{' '}
-//       {new Date().getFullYear()}
-//       {'.'}
-//     </Typography>
-//   );
-// }
+import { onValue, ref, remove, set } from 'firebase/database';
 
 const cards = [
   {
@@ -88,14 +67,19 @@ const theme = createTheme();
 export const getId = () => new Date().valueOf();
 
 export default function Album() {
-  //const [todosR, setTodosR] = useState('');
-  const [openModal, setOpenModal] = useState(false);
-  const [currentTodo, setCurrentTodo] = useState({});
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [todoId, setTodoId] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [expDate, setExpDate] = useState('31.12.2022');
+  const [files, setFiles] = useState('');
+  const [todos, setTodos] = useState([]);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
-  const { todos } = useSelector((state) => state.todoSlice);
-  const dispatch = useDispatch();
+  const handleOpenAddModal = () => setOpenAddModal(true);
+  const handleCloseAddModal = () => setOpenAddModal(false);
+  const handleOpenEditModal = () => setOpenEditModal(true);
+  const handleCloseEditModal = () => setOpenEditModal(false);
 
   useEffect(() => {
     const dbRef = ref(db, 'todos');
@@ -106,58 +90,59 @@ export default function Album() {
         const data = childSnapshot.val();
         fbTodos.push(data);
       });
-      //setTodosR(fbTodos);
-      dispatch(fetchTodos(fbTodos));
+      setTodos(fbTodos);
     });
   }, []);
 
   const handleNewTask = () => {
-    setCurrentTodo({});
-    handleOpenModal();
+    setTitle('');
+    setDescription('');
+    setExpDate('');
+    setFiles('');
+    handleOpenAddModal();
   };
 
   const handleNewEdit = (todo) => {
-    setCurrentTodo(todo);
-    handleOpenModal();
+    setTodoId(todo.id);
+    setTitle(todo.title);
+    setDescription(todo.description);
+    setExpDate(todo.expDate);
+    setFiles(todo.files);
+    handleOpenEditModal();
   };
 
-  const handleAddTodo = (todo) => {
-    const { id, title, description, expDate, files } = todo;
-   
-    const currId = getId();
-    // dispatch(
-    //   postTodos({
-    //     id: currId,
-    //     title,
-    //     description,
-    //     expDate: expDate.format(),
-    //     files: '',
-    //   })
-    // );
-  };
-
-  const handleEditTodo = (id, title, description, expDate, files) => {
-    handleOpenModal();
-    setCurrentTodo({
-      id,
+  const handleAddTodo = () => {
+    const newId = getId();
+    const date =
+      typeof expDate === 'string' ? expDate : expDate.format('DD.MM.YYYY');
+    const reference = ref(db, 'todos/' + newId);
+    set(reference, {
+      id: newId,
       title,
       description,
-      expDate,
+      expDate: date,
       files,
     });
-    dispatch(
-      putTodos({
-        id,
-        title,
-        description,
-        expDate,
-        files,
-      })
-    );
+    handleCloseAddModal();
+  };
+
+  const handleEditTodo = () => {
+    const reference = ref(db, 'todos/' + todoId);
+    const date =
+      typeof expDate === 'string' ? expDate : expDate.format('DD.MM.YYYY');
+    set(reference, {
+      id: todoId,
+      title,
+      description,
+      expDate: date,
+      files,
+    });
+    handleCloseEditModal();
   };
 
   const handleDeleteTodo = (todo) => {
-    dispatch(deleteTodos(todo));
+    const reference = ref(db, 'todos/' + todo.id);
+    remove(reference);
   };
 
   return (
@@ -199,32 +184,20 @@ export default function Album() {
                 Добавить
               </Button>
               <TodoModal
-                open={openModal}
-                handleCloseModal={handleCloseModal}
-                handleAddTodo={handleAddTodo}
-                todo={currentTodo}
+                open={openAddModal}
+                handleCloseModal={handleCloseAddModal}
+                btnName={'Сохранить'}
+                handleAction={handleAddTodo}
+                title={title}
+                description={description}
+                expDate={expDate}
+                files={files}
+                setTitle={setTitle}
+                setDescription={setDescription}
+                setExpDate={setExpDate}
+                setFiles={setFiles}
               ></TodoModal>
             </Box>
-
-            {/* <Typography
-              variant="h5"
-              align="center"
-              color="text.secondary"
-              paragraph
-            >
-              Something short and leading about the collection below—its
-              contents, the creator, etc. Make it short and sweet, but not too
-              short so folks don&apos;t simply skip over it entirely.
-            </Typography> */}
-            {/* <Stack
-              sx={{ pt: 4 }}
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-            >
-              <Button variant="contained">Main call to action</Button>
-              <Button variant="outlined">Secondary action</Button>
-            </Stack> */}
           </Container>
         </Box>
         <Container sx={{ py: 8 }} maxWidth="md">
@@ -240,16 +213,6 @@ export default function Album() {
                       flexDirection: 'column',
                     }}
                   >
-                    {/* <CardMedia
-                    component="img"
-                    sx={{
-                      // display: 'none',
-                      // 16:9
-                      // pt: '56.25%',
-                    }}
-                    image="https://picsum.photos/100"
-                    alt="random"
-                  /> */}
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography gutterBottom variant="h4" component="h2">
                         {todo.title}
@@ -261,8 +224,22 @@ export default function Album() {
                     </CardContent>
                     <CardActions>
                       <Button onClick={() => handleNewEdit(todo)}>Edit</Button>
+                      <TodoModal
+                        open={openEditModal}
+                        handleCloseModal={handleCloseEditModal}
+                        btnName={'Изменить'}
+                        handleAction={handleEditTodo}
+                        title={title}
+                        description={description}
+                        expDate={expDate}
+                        files={files}
+                        setTitle={setTitle}
+                        setDescription={setDescription}
+                        setExpDate={setExpDate}
+                        setFiles={setFiles}
+                      ></TodoModal>
                       <Button
-                        onClick={handleDeleteTodo}
+                        onClick={() => handleDeleteTodo(todo)}
                         size="small"
                         sx={{ m: 2 }}
                       >

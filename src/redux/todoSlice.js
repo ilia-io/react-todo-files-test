@@ -5,11 +5,12 @@ const initialState = {
   todos: [],
   isLoading: false,
   error: '',
-  // currentUser: {
-  //   id: 0,
-  //   name: '',
-  //   email: '',
-  //   password: '',
+  // currentTodo: {
+  //   id: '',
+  //   title: '',
+  //   description: '',
+  //   expDate: '',
+  //   files: '',
   // },
 };
 
@@ -17,17 +18,19 @@ export const todoSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    // setCurrentUser(state, action: PayloadAction<ICurrentUser>) {
-    //   state.currentUser.id = action.payload.id;
-    //   state.currentUser.name = action.payload.name;
-    //   state.currentUser.email = action.payload.email;
-    //   state.currentUser.password = action.payload.password;
+    // setCurrentTodo(state, action) {
+    //   state.currentTodo.id = action.payload.id;
+    //   state.currentTodo.title = action.payload.title;
+    //   state.currentTodo.description = action.payload.description;
+    //   state.currentTodo.expDate = action.payload.expDate;
+    //   state.currentTodo.files = action.payload.files;
     // },
-    // removeCurrentUser(state) {
-    //   state.currentUser.id = 0;
-    //   state.currentUser.name = '';
-    //   state.currentUser.email = '';
-    //   state.currentUser.password = '';
+    // removeCurrentTodo(state) {
+    //   state.currentTodo.id = '';
+    //   state.currentTodo.title = '';
+    //   state.currentTodo.description = '';
+    //   state.currentTodo.expDate = '';
+    //   state.currentTodo.files = '';
     // },
   },
   extraReducers: (builder) => {
@@ -84,6 +87,6 @@ export const todoSlice = createSlice({
   },
 });
 
-// export const { setCurrentUser, removeCurrentUser } = usersSlice.actions;
+//export const { setCurrentTodo, removeCurrentTodo } = todoSlice.actions;
 
 export default todoSlice.reducer;

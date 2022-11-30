@@ -58,7 +58,6 @@ export const deleteTodos = createAsyncThunk(
   async (todoData, thunkAPI) => {
     try {
       const reference = ref(db, 'todos/' + todoData.id);
-      console.log(reference)
       remove(reference);
       return todoData.id;
     } catch (error) {
