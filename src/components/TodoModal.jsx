@@ -35,6 +35,7 @@ export default function BasicModal({
   setDescription,
   setExpDate,
   setFiles,
+  createTodo,
 }) {
   return (
     <div>

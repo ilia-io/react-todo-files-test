@@ -14,9 +14,19 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import TodoModal from './TodoModal';
-import { db } from '../firebase';
-import { onValue, ref, remove, set } from 'firebase/database';
-
+import { db, firestoreDB } from '../firebase';
+import { onValue, query, ref, remove, set, update } from 'firebase/database';
+import TodoSwitch from './TodoSwitch';
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore';
+import dayjs from 'dayjs';
+import { color } from '@mui/system';
+import * as colors from '@mui/material/colors';
 const cards = [
   {
     id: 1,
@@ -72,6 +82,7 @@ export default function Album() {
   const [description, setDescription] = useState('');
   const [expDate, setExpDate] = useState('31.12.2022');
   const [files, setFiles] = useState('');
+  const [isCompleted, setIsCompleted] = useState(false);
   const [todos, setTodos] = useState([]);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -81,24 +92,58 @@ export default function Album() {
   const handleOpenEditModal = () => setOpenEditModal(true);
   const handleCloseEditModal = () => setOpenEditModal(false);
 
-  useEffect(() => {
-    const dbRef = ref(db, 'todos');
-    onValue(dbRef, (snapshot) => {
-      const fbTodos = [];
-      snapshot.forEach((childSnapshot) => {
-        //const keyName = childSnapshot.key;
-        const data = childSnapshot.val();
-        fbTodos.push(data);
-      });
-      setTodos(fbTodos);
+  //create
+  const createTodo = async () => {
+    if (title === '') {
+      alert('Пожалуйста, введите имя задачи');
+      return;
+    }
+    await addDoc(collection(firestoreDB, 'todos'), {
+      title,
+      isCompleted: false,
+      description,
+      expDate,
+      files,
     });
+  };
+  //read
+  useEffect(() => {
+    const q = query(collection(firestoreDB, 'todos'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let todosArr = [];
+      querySnapshot.forEach((doc) => {
+        todosArr.push({ ...doc.data(), id: doc.id });
+      });
+      setTodos(todosArr);
+    });
+    return () => unsubscribe();
   }, []);
+  //update
+  const toggleComplete = async (todo) => {
+    await updateDoc(doc(firestoreDB, 'todos', todo.id), {
+      isCompleted: !todo.isCompleted,
+    });
+  };
+
+  // useEffect(() => {
+  //   const dbRef = ref(db, 'todos');
+  //   onValue(dbRef, (snapshot) => {
+  //     const fbTodos = [];
+  //     snapshot.forEach((childSnapshot) => {
+  //       //const keyName = childSnapshot.key;
+  //       const data = childSnapshot.val();
+  //       fbTodos.push(data);
+  //     });
+  //     setTodos(fbTodos);
+  //   });
+  // }, []);
 
   const handleNewTask = () => {
     setTitle('');
     setDescription('');
     setExpDate('');
     setFiles('');
+    setIsCompleted(false);
     handleOpenAddModal();
   };
 
@@ -108,6 +153,7 @@ export default function Album() {
     setDescription(todo.description);
     setExpDate(todo.expDate);
     setFiles(todo.files);
+    setIsCompleted(todo.isCompleted);
     handleOpenEditModal();
   };
 
@@ -122,6 +168,7 @@ export default function Album() {
       description,
       expDate: date,
       files,
+      isCompleted: false,
     });
     handleCloseAddModal();
   };
@@ -136,13 +183,33 @@ export default function Album() {
       description,
       expDate: date,
       files,
+      isCompleted,
     });
     handleCloseEditModal();
   };
 
+  // useEffect(() => {
+  //   const reference = ref(db, 'todos/');
+  //   set(reference, todos);
+  // }, [isCompleted]);
+
   const handleDeleteTodo = (todo) => {
     const reference = ref(db, 'todos/' + todo.id);
     remove(reference);
+  };
+
+  const updateCheckStatus = async (id, checked) => {
+    // setTodos(
+    //   todos.map((todo) => (todo.id === id ? { ...todo, isCompleted } : todo))
+    // );
+    // console.log(isCompleted);
+    const todo = todos.filter((el) => el.id === id);
+    const reference = ref(db, 'todos/' + id);
+
+    await set(reference, {
+      ...todo[0],
+      isCompleted: checked,
+    });
   };
 
   return (
@@ -187,7 +254,7 @@ export default function Album() {
                 open={openAddModal}
                 handleCloseModal={handleCloseAddModal}
                 btnName={'Сохранить'}
-                handleAction={handleAddTodo}
+                handleAction={createTodo}
                 title={title}
                 description={description}
                 expDate={expDate}
@@ -203,22 +270,57 @@ export default function Album() {
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
+            {/* <Todo
+              key={todo.id}
+              isCompleted={isCompleted}
+              setIsCompleted={setIsCompleted}
+              checked={todo.isCompleted}
+              handleNewEdit={handleNewEdit}
+            /> */}
             {todos &&
               todos.map((todo) => (
                 <Grid item key={todo.id} xs={12} sm={6} md={4}>
                   <Card
-                    sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
+                    sx={
+                      todo.isCompleted === true
+                        ? {
+                            backgroundColor: colors.green[50],
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                          }
+                        : {
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                          }
+                    }
                   >
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography gutterBottom variant="h4" component="h2">
                         {todo.title}
                       </Typography>
-                      <Typography gutterBottom variant="h6">
-                        Сделать до: {todo.expDate}
+                      <Box>
+                        <TodoSwitch
+                          isCompleted={todo.isCompleted}
+                          setIsCompleted={setIsCompleted}
+                          todo={todo}
+                          updateCheckStatus={updateCheckStatus}
+                          toggleComplete={toggleComplete}
+                        />
+                      </Box>
+
+                      <Typography
+                        sx={
+                          dayjs(todo.expDate).valueOf() < dayjs().valueOf()
+                            ? {
+                                backgroundColor: colors.red[100],
+                              }
+                            : {}
+                        }
+                        variant="p"
+                      >
+                        Сделать до: {dayjs(todo.expDate).format('DD.MM.YYYY')}
                       </Typography>
                       <Typography>{todo.description}</Typography>
                     </CardContent>

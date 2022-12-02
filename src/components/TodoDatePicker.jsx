@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/ru';
+import dayjs from 'dayjs';
 
 export default function BasicDatePicker({ expDate, setExpDate }) {
   return (
@@ -13,7 +14,7 @@ export default function BasicDatePicker({ expDate, setExpDate }) {
         label="Дата завершения"
         value={expDate}
         onChange={(newValue) => {
-          setExpDate(newValue);
+          setExpDate(newValue.format());
         }}
         renderInput={(params) => <TextField {...params} />}
       />
