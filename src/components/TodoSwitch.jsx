@@ -2,13 +2,8 @@ import { FormControlLabel } from '@mui/material';
 import Switch from '@mui/material/Switch';
 import { useState } from 'react';
 
-export default function ControlledSwitches({
-  isCompleted,
-  setIsCompleted,
-  todo,
-  toggleComplete,
-}) {
-  const [checked, setChecked] = useState(isCompleted);
+export default function ControlledSwitches({ todo, toggleComplete }) {
+  const [checked, setChecked] = useState(todo.isCompleted);
   const handleChange = (event) => {
     setChecked(event.target.checked);
     toggleComplete(todo);

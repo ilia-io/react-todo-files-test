@@ -26,18 +26,17 @@ const style = {
 export default function BasicModal({
   open,
   handleCloseModal,
-  btnName,
-  handleAction,
-  title,
-  description,
-  expDate,
-  files,
   setTitle,
   setDescription,
+  expDate,
   setExpDate,
   setFiles,
-  createTodo,
+  title,
+  description,
+  files,
+  handleAction,
   uploadFile,
+  btnName,
 }) {
   return (
     <div>
@@ -67,13 +66,7 @@ export default function BasicModal({
             fullWidth
           />
           <TodoDatePicker expDate={expDate} setExpDate={setExpDate} />
-          <Button
-            sx={{ mt: '16px' }}
-            fullWidth
-            size="small"
-            variant="contained"
-            component="label"
-          >
+          <Button sx={{ mt: '16px' }} fullWidth size="small" component="label">
             Выбрать файл
             <input
               hidden
@@ -91,7 +84,6 @@ export default function BasicModal({
             component="label"
             disabled={files ? false : true}
             onClick={() => uploadFile()}
-            // color={'secondary'}
           >
             загрузить
           </Button>

@@ -12,12 +12,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TodoModal from './TodoModal';
-import { db, firebaseStorage, firestoreDB } from '../firebase';
-import { query, set, update } from 'firebase/database';
+import { firebaseStorage, firestoreDB } from '../firebase';
 import TodoSwitch from './TodoSwitch';
 import {
   addDoc,
@@ -25,57 +25,13 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  query,
   updateDoc,
 } from 'firebase/firestore';
 import { getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
 import dayjs from 'dayjs';
-import { color } from '@mui/system';
 import * as colors from '@mui/material/colors';
-import { Stack } from '@mui/material';
-const cards = [
-  {
-    id: 1,
-    title: 'make todo app',
-    description: 'clean code',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-  {
-    id: 2,
-    title: 'make todo app',
-    description: 'clean code Lorem ipsum dolor sit',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-  {
-    id: 3,
-    title: 'make todo app',
-    description: 'clean code',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-  {
-    id: 4,
-    title: 'make todo app',
-    description: 'clean code',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-  {
-    id: 5,
-    title: 'make todo app',
-    description: 'clean code',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-  {
-    id: 6,
-    title: 'make todo app',
-    description: 'clean code',
-    expDate: '11.12.2022',
-    files: 'file url',
-  },
-];
+
 
 const theme = createTheme();
 
@@ -89,13 +45,11 @@ export default function Album() {
   const [description, setDescription] = useState('');
   const [expDate, setExpDate] = useState(now);
   const [files, setFiles] = useState(null);
-  const [isCompleted, setIsCompleted] = useState(false);
   const [todos, setTodos] = useState([]);
+  const [filesUrl, setFilesUrl] = useState('');
+
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-
-  const [filesUrl, setFilesUrl] = useState([]);
-
   const handleOpenAddModal = () => setOpenAddModal(true);
   const handleCloseAddModal = () => setOpenAddModal(false);
   const handleOpenEditModal = () => setOpenEditModal(true);
@@ -106,16 +60,12 @@ export default function Album() {
       alert('Пожалуйста, введите имя задачи');
       return;
     }
-
-    // const date =
-    //   expDate.length < 21 ? expDate : dayjs(expDate).format('DD.MM.YYYY');
-
     await addDoc(collection(firestoreDB, 'todos'), {
       title,
       isCompleted: false,
       description,
       expDate,
-      filesUrl: filesUrl[0],
+      filesUrl,
     });
     setFiles(null);
     handleCloseAddModal();
@@ -133,6 +83,20 @@ export default function Album() {
     return () => unsubscribe();
   }, []);
   //update
+  const editTodo = async () => {
+    if (title === '') {
+      alert('Пожалуйста, введите имя задачи');
+      return;
+    }
+    await updateDoc(doc(firestoreDB, 'todos', todoId), {
+      title,
+      description,
+      expDate,
+      filesUrl,
+    });
+    setFiles(null);
+    handleCloseEditModal();
+  };
   const toggleComplete = async (todo) => {
     await updateDoc(doc(firestoreDB, 'todos', todo.id), {
       isCompleted: !todo.isCompleted,
@@ -157,7 +121,8 @@ export default function Album() {
     );
     uploadBytes(filesRef, files).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
-        setFilesUrl((prev) => [url, ...prev]);
+        setFilesUrl(url);
+        //setFilesUrl((prev) => [url, ...prev]);
       });
     });
   };
@@ -167,16 +132,17 @@ export default function Album() {
     listAll(filesListRef).then((response) => {
       response.items.forEach((item) => {
         getDownloadURL(item).then((url) => {
-          setFilesUrl((prev) => [url, ...prev]);
+          setFilesUrl(url);
+          //setFilesUrl((prev) => [url, ...prev]);
         });
       });
     });
   }, []);
-
   const handleNewTask = () => {
     setTitle('');
     setDescription('');
-    setIsCompleted(false);
+    setExpDate(now);
+    setFilesUrl('');
     handleOpenAddModal();
   };
 
@@ -185,50 +151,17 @@ export default function Album() {
     setTitle(todo.title);
     setDescription(todo.description);
     setExpDate(todo.expDate);
-    setFiles(todo.files);
-    setIsCompleted(todo.isCompleted);
+    setFilesUrl(todo.filesUrl);
     handleOpenEditModal();
   };
-
-  const handleAddTodo = () => {
-    const newId = getId();
-    const date =
-      typeof expDate === 'string' ? expDate : expDate.format('DD.MM.YYYY');
-    const reference = ref(db, 'todos/' + newId);
-    set(reference, {
-      id: newId,
-      title,
-      description,
-      expDate: date,
-      files,
-      isCompleted: false,
-    });
-    handleCloseAddModal();
-  };
-
-  const handleEditTodo = () => {
-    const reference = ref(db, 'todos/' + todoId);
-    const date =
-      typeof expDate === 'string' ? expDate : expDate.format('DD.MM.YYYY');
-    set(reference, {
-      id: todoId,
-      title,
-      description,
-      expDate: date,
-      files,
-      isCompleted,
-    });
-    handleCloseEditModal();
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
+          <FormatListBulletedIcon sx={{ mr: 2 }} />
           <Typography variant="h6" color="inherit" noWrap>
-            Album
+            todo-лист
           </Typography>
         </Toolbar>
       </AppBar>
@@ -280,13 +213,6 @@ export default function Album() {
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
           <Grid container spacing={4}>
-            {/* <Todo
-              key={todo.id}
-              isCompleted={isCompleted}
-              setIsCompleted={setIsCompleted}
-              checked={todo.isCompleted}
-              handleNewEdit={handleNewEdit}
-            /> */}
             {todos &&
               todos.map((todo) => (
                 <Grid item key={todo.id} xs={12} sm={6} md={4}>
@@ -312,8 +238,6 @@ export default function Album() {
                       </Typography>
                       <Box>
                         <TodoSwitch
-                          isCompleted={todo.isCompleted}
-                          setIsCompleted={setIsCompleted}
                           todo={todo}
                           toggleComplete={toggleComplete}
                         />
@@ -330,7 +254,7 @@ export default function Album() {
                         variant="p"
                       >
                         Сделать до:{' '}
-                        {todo.expDate && todo.expDate.length < 12
+                        {todo.expDate && todo.expDate.length < 11
                           ? dayjs(todo.expDate)
                           : dayjs(todo.expDate).format('DD.MM.YYYY')}
                       </Typography>
@@ -349,7 +273,7 @@ export default function Album() {
                         open={openEditModal}
                         handleCloseModal={handleCloseEditModal}
                         btnName={'Изменить'}
-                        handleAction={handleEditTodo}
+                        handleAction={editTodo}
                         title={title}
                         description={description}
                         expDate={expDate}
@@ -358,6 +282,7 @@ export default function Album() {
                         setDescription={setDescription}
                         setExpDate={setExpDate}
                         setFiles={setFiles}
+                        uploadFile={uploadFile}
                       ></TodoModal>
                       <Button
                         onClick={() => deleteTodo(todo.id)}
@@ -373,6 +298,7 @@ export default function Album() {
                       size="small"
                       target={'_blank'}
                       href={todo.filesUrl}
+                      disabled={todo.filesUrl ? false : true}
                     >
                       Смотреть файл
                     </Button>
