@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
-import Album from './components/Album';
-import { useDispatch } from 'react-redux';
-import { fetchTodos } from './redux/asyncActions';
+import React from 'react';
+import TodoApp from './components/TodoApp';
 
 function App() {
   return (
-      <>
-        <Album />
-      </>
+    <>
+      <TodoApp />
+    </>
   );
 }
 
