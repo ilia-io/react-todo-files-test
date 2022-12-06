@@ -5,15 +5,12 @@ import { useState } from 'react';
 export default function ControlledSwitches({
   isCompleted,
   setIsCompleted,
-  updateCheckStatus,
   todo,
   toggleComplete,
 }) {
   const [checked, setChecked] = useState(isCompleted);
   const handleChange = (event) => {
     setChecked(event.target.checked);
-    // setIsCompleted(checked);
-    // updateCheckStatus(id, checked);
     toggleComplete(todo);
   };
 
@@ -28,8 +25,7 @@ export default function ControlledSwitches({
             inputProps={{ 'aria-label': 'controlled' }}
           />
         }
-        label="Готово"
-        labelPlacement="start"
+        label="Сделано"
       />
     </>
   );

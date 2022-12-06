@@ -16,7 +16,10 @@ export default function BasicDatePicker({ expDate, setExpDate }) {
         onChange={(newValue) => {
           setExpDate(newValue.format());
         }}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => (
+          <TextField {...params}
+          />
+        )}
       />
     </LocalizationProvider>
   );

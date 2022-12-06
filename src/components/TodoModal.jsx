@@ -2,11 +2,12 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { TextField } from '@mui/material';
+import { IconButton, Stack, TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { PhotoCamera } from '@mui/icons-material';
 
 const style = {
   position: 'absolute',
@@ -36,6 +37,7 @@ export default function BasicModal({
   setExpDate,
   setFiles,
   createTodo,
+  uploadFile,
 }) {
   return (
     <div>
@@ -72,8 +74,26 @@ export default function BasicModal({
             variant="contained"
             component="label"
           >
-            Загрузить файл
-            <input hidden multiple type="file" />
+            Выбрать файл
+            <input
+              hidden
+              type="file"
+              onChange={(event) => {
+                setFiles(event.target.files[0]);
+              }}
+            />
+          </Button>
+          <Button
+            sx={{ mt: '16px' }}
+            fullWidth
+            size="small"
+            variant="contained"
+            component="label"
+            disabled={files ? false : true}
+            onClick={() => uploadFile()}
+            // color={'secondary'}
+          >
+            загрузить
           </Button>
           <Button
             sx={{ mt: 4 }}

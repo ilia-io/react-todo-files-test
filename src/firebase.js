@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app';
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getDatabase } from 'firebase/database';
 import { getFirestore } from 'firebase/firestore';
-
+import {getStorage} from 'firebase/storage'
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -20,3 +20,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase();
 export const firestoreDB = getFirestore(app);
+export const firebaseStorage = getStorage(app)
