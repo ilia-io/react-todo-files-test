@@ -1,13 +1,9 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { IconButton, Stack, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { PhotoCamera } from '@mui/icons-material';
+import { useState } from 'react';
 
 const style = {
   position: 'absolute',
@@ -24,7 +20,7 @@ const style = {
 };
 
 export default function BasicModal({
-  open,
+  openModal,
   handleCloseModal,
   setTitle,
   setDescription,
@@ -41,7 +37,7 @@ export default function BasicModal({
   return (
     <div>
       <Modal
-        open={open}
+        open={openModal}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -90,7 +86,7 @@ export default function BasicModal({
           <Button
             sx={{ mt: 4 }}
             onClick={() => {
-              handleAction();
+              handleAction(handleCloseModal);
             }}
             variant="contained"
             startIcon={''}

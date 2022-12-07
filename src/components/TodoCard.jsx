@@ -11,7 +11,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useState } from 'react';
 import TodoSwitch from './TodoSwitch';
 import TodoModal from './TodoModal';
 
@@ -28,11 +28,21 @@ const TodoCard = ({
   uploadFile,
   deleteTodo,
   editTodo,
-  handleCloseEditModal,
-  openEditModal,
-  handleNewEdit,
   toggleComplete,
+  setFilesUrl,
+  setTodoId,
 }) => {
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const handleCloseEditModal = () => setOpenEditModal(false);
+
+  const handleNewEdit = () => {
+    setTodoId(todo.id);
+    setTitle(todo.title);
+    setDescription(todo.description);
+    setExpDate(todo.expDate);
+    setFilesUrl(todo.filesUrl);
+    setOpenEditModal(true);
+  };
   return (
     <Grid item xs={12} sm={6} md={4}>
       <Card
@@ -80,12 +90,12 @@ const TodoCard = ({
             size="small"
             sx={{ m: 2 }}
             startIcon={<EditIcon />}
-            onClick={() => handleNewEdit(todo)}
+            onClick={handleNewEdit}
           >
             Изменить
           </Button>
           <TodoModal
-            open={openEditModal}
+            openModal={openEditModal}
             handleCloseModal={handleCloseEditModal}
             btnName={'Изменить'}
             handleAction={editTodo}

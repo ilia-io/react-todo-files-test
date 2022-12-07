@@ -40,12 +40,11 @@ export default function Album() {
   const [todos, setTodos] = useState([]);
   const [filesUrl, setFilesUrl] = useState('');
 
+
+
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
   const handleOpenAddModal = () => setOpenAddModal(true);
   const handleCloseAddModal = () => setOpenAddModal(false);
-  const handleOpenEditModal = () => setOpenEditModal(true);
-  const handleCloseEditModal = () => setOpenEditModal(false);
   //create
   const createTodo = async () => {
     if (title === '') {
@@ -75,7 +74,7 @@ export default function Album() {
     return () => unsubscribe();
   }, []);
   //update
-  const editTodo = async () => {
+  const editTodo = async (closeModal) => {
     if (title === '') {
       alert('Пожалуйста, введите имя задачи');
       return;
@@ -87,7 +86,7 @@ export default function Album() {
       filesUrl,
     });
     setFiles(null);
-    handleCloseEditModal();
+    closeModal();
   };
   const toggleComplete = async (todo) => {
     await updateDoc(doc(firestoreDB, 'todos', todo.id), {
@@ -138,14 +137,6 @@ export default function Album() {
     handleOpenAddModal();
   };
 
-  const handleNewEdit = (todo) => {
-    setTodoId(todo.id);
-    setTitle(todo.title);
-    setDescription(todo.description);
-    setExpDate(todo.expDate);
-    setFilesUrl(todo.filesUrl);
-    handleOpenEditModal();
-  };
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -158,7 +149,6 @@ export default function Album() {
         </Toolbar>
       </AppBar>
       <main>
-        {/* Hero unit */}
         <Box
           sx={{
             bgcolor: 'background.paper',
@@ -185,7 +175,7 @@ export default function Album() {
                 Добавить
               </Button>
               <TodoModal
-                open={openAddModal}
+                openModal={openAddModal}
                 handleCloseModal={handleCloseAddModal}
                 btnName={'Сохранить'}
                 handleAction={createTodo}
@@ -203,7 +193,6 @@ export default function Album() {
           </Container>
         </Box>
         <Container sx={{ py: 8 }} maxWidth="md">
-          {/* End hero unit */}
           <Grid container spacing={4}>
             {todos &&
               todos.map((todo) => (
@@ -221,10 +210,9 @@ export default function Album() {
                   uploadFile={uploadFile}
                   deleteTodo={deleteTodo}
                   editTodo={editTodo}
-                  handleCloseEditModal={handleCloseEditModal}
-                  openEditModal={openEditModal}
-                  handleNewEdit={handleNewEdit}
                   toggleComplete={toggleComplete}
+                  setFilesUrl={setFilesUrl}
+                  setTodoId={setTodoId}
                 />
               ))}
           </Grid>
