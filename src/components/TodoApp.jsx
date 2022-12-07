@@ -39,8 +39,7 @@ export default function Album() {
   const [files, setFiles] = useState(null);
   const [todos, setTodos] = useState([]);
   const [filesUrl, setFilesUrl] = useState('');
-
-
+  const [uploadStatus, setUploadStatus] = useState(false);
 
   const [openAddModal, setOpenAddModal] = useState(false);
   const handleOpenAddModal = () => setOpenAddModal(true);
@@ -113,27 +112,29 @@ export default function Album() {
     uploadBytes(filesRef, files).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
         setFilesUrl(url);
+        setUploadStatus(true);
         //setFilesUrl((prev) => [url, ...prev]);
       });
     });
   };
   //get Files
-  const filesListRef = ref(firebaseStorage, 'uploadedFiles/');
-  useEffect(() => {
-    listAll(filesListRef).then((response) => {
-      response.items.forEach((item) => {
-        getDownloadURL(item).then((url) => {
-          setFilesUrl(url);
-          //setFilesUrl((prev) => [url, ...prev]);
-        });
-      });
-    });
-  }, []);
+  // const filesListRef = ref(firebaseStorage, 'uploadedFiles/');
+  // useEffect(() => {
+  //   listAll(filesListRef).then((response) => {
+  //     response.items.forEach((item) => {
+  //       getDownloadURL(item).then((url) => {
+  //         setFilesUrl(url);
+  //         //setFilesUrl((prev) => [url, ...prev]);
+  //       });
+  //     });
+  //   });
+  // }, []);
   const handleNewTask = () => {
     setTitle('');
     setDescription('');
     setExpDate(now);
     setFilesUrl('');
+    setUploadStatus(false);
     handleOpenAddModal();
   };
 
@@ -188,6 +189,8 @@ export default function Album() {
                 setExpDate={setExpDate}
                 setFiles={setFiles}
                 uploadFile={uploadFile}
+                uploadStatus={uploadStatus}
+                setUploadStatus={setUploadStatus}
               ></TodoModal>
             </Box>
           </Container>
@@ -213,6 +216,8 @@ export default function Album() {
                   toggleComplete={toggleComplete}
                   setFilesUrl={setFilesUrl}
                   setTodoId={setTodoId}
+                  uploadStatus={uploadStatus}
+                  setUploadStatus={setUploadStatus}
                 />
               ))}
           </Grid>

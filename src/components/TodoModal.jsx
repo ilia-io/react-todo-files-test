@@ -1,9 +1,8 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { TextField } from '@mui/material';
+import { colors, TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
-import { useState } from 'react';
 
 const style = {
   position: 'absolute',
@@ -33,6 +32,8 @@ export default function BasicModal({
   handleAction,
   uploadFile,
   btnName,
+  uploadStatus,
+  setUploadStatus,
 }) {
   return (
     <div>
@@ -62,7 +63,13 @@ export default function BasicModal({
             fullWidth
           />
           <TodoDatePicker expDate={expDate} setExpDate={setExpDate} />
-          <Button sx={{ mt: '16px' }} fullWidth size="small" component="label">
+          <Button
+            onClick={() => setUploadStatus(false)}
+            sx={{ mt: '16px' }}
+            fullWidth
+            size="small"
+            component="label"
+          >
             Выбрать файл
             <input
               hidden
@@ -72,17 +79,30 @@ export default function BasicModal({
               }}
             />
           </Button>
-          <Button
-            sx={{ mt: '16px' }}
-            fullWidth
-            size="small"
-            variant="contained"
-            component="label"
-            disabled={files ? false : true}
-            onClick={() => uploadFile()}
-          >
-            загрузить
-          </Button>
+
+          {uploadStatus ? (
+            <Button
+              sx={{ mt: '16px' }}
+              fullWidth
+              size="small"
+              variant="contained"
+              color="success"
+            >
+              Успешно загружено
+            </Button>
+          ) : (
+            <Button
+              sx={{ mt: '16px' }}
+              fullWidth
+              size="small"
+              variant="contained"
+              component="label"
+              disabled={files ? false : true}
+              onClick={() => uploadFile()}
+            >
+              загрузить
+            </Button>
+          )}
           <Button
             sx={{ mt: 4 }}
             onClick={() => {

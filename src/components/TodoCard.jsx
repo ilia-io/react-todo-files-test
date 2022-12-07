@@ -31,6 +31,8 @@ const TodoCard = ({
   toggleComplete,
   setFilesUrl,
   setTodoId,
+  uploadStatus,
+  setUploadStatus,
 }) => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const handleCloseEditModal = () => setOpenEditModal(false);
@@ -41,6 +43,7 @@ const TodoCard = ({
     setDescription(todo.description);
     setExpDate(todo.expDate);
     setFilesUrl(todo.filesUrl);
+    setUploadStatus(false);
     setOpenEditModal(true);
   };
   return (
@@ -108,6 +111,8 @@ const TodoCard = ({
             setExpDate={setExpDate}
             setFiles={setFiles}
             uploadFile={uploadFile}
+            uploadStatus={uploadStatus}
+            setUploadStatus={setUploadStatus}
           ></TodoModal>
           <Button
             onClick={() => deleteTodo(todo.id)}
