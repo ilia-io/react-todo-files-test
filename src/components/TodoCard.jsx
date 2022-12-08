@@ -14,7 +14,10 @@ import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import TodoSwitch from './TodoSwitch';
 import TodoModal from './TodoModal';
-
+/**
+ * Компонент карточка задачи
+ * @namespace TodoCard
+ */
 const TodoCard = ({
   todo,
   title,
@@ -34,9 +37,18 @@ const TodoCard = ({
   uploadStatus,
   setUploadStatus,
 }) => {
+  /**
+   * Стейт для модалки изменения задачи (внутри карточки)
+   * @memberof TodoCard
+   * @member openEditModal
+   */
   const [openEditModal, setOpenEditModal] = useState(false);
   const handleCloseEditModal = () => setOpenEditModal(false);
-
+  /**
+   * Функция передает данные из карточки задачи в стейт
+   * и открывает модалку для изменения задачи
+   * @memberof TodoCard
+   */
   const handleNewEdit = () => {
     setTodoId(todo.id);
     setTitle(todo.title);

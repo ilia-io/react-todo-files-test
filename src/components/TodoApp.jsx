@@ -26,25 +26,55 @@ import dayjs from 'dayjs';
 import TodoCard from './TodoCard';
 
 const theme = createTheme();
-
+/**
+ * Функция для получения id из даты
+ * @return {number}
+ */
 export const getId = () => new Date().valueOf();
-
+/**
+ * Функция для получения отформатированной даты сейчас
+ * @return {number}
+ */
 const now = dayjs().format();
-
-export default function Album() {
+/**
+ * Основной компонент приложения
+ * @namespace TodoApp
+ */
+export default function TodoApp() {
+  /**
+   * Стейты для инпутов
+   * @memberof TodoApp
+   * @member todoId
+   */
   const [todoId, setTodoId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [expDate, setExpDate] = useState(now);
   const [files, setFiles] = useState(null);
+  /**
+   * Стейты для временного хранения данных
+   * @memberof TodoApp
+   * @member todos
+   */
   const [todos, setTodos] = useState([]);
   const [filesUrl, setFilesUrl] = useState('');
   const [uploadStatus, setUploadStatus] = useState(false);
-
+  /**
+   * Стейты для модалки добавления задачи
+   * @memberof TodoApp
+   * @member openAddModal
+   */
   const [openAddModal, setOpenAddModal] = useState(false);
   const handleOpenAddModal = () => setOpenAddModal(true);
   const handleCloseAddModal = () => setOpenAddModal(false);
-  //create
+  /**
+   * Функция добавляет задачу на бэк, очищает стейт с файлами
+   * и закрывает модалку.
+   *
+   * Не позволяет добавить задачу без названия, при такой попытке
+   * показывает предупреждение.
+   * @memberof TodoApp
+   */
   const createTodo = async () => {
     if (title === '') {
       alert('Пожалуйста, введите имя задачи');
@@ -60,7 +90,11 @@ export default function Album() {
     setFiles(null);
     handleCloseAddModal();
   };
-  //read
+  /**
+   * Функция получает задачи с бэка и сохраняет в массив
+   * для отрисовки
+   * @memberof TodoApp
+   */
   useEffect(() => {
     const q = query(collection(firestoreDB, 'todos'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -72,7 +106,15 @@ export default function Album() {
     });
     return () => unsubscribe();
   }, []);
-  //update
+  /**
+   * Функция для изменения задачи, обновляет задачу на бэке по id,
+   * очищает стейт файлов и закрывает модалку.
+   *
+   * Не позволяет добавить задачу без названия, при такой попытке
+   * показывает предупреждение.
+   * @memberof TodoApp
+   * @param {function} closeModal функция закрывает модалку
+   */
   const editTodo = async (closeModal) => {
     if (title === '') {
       alert('Пожалуйста, введите имя задачи');
@@ -87,17 +129,38 @@ export default function Album() {
     setFiles(null);
     closeModal();
   };
+  /**
+   * Функция переключения готовности задачи, меняет статус
+   * готовности на бэке
+   *
+   * @memberof TodoApp
+   * @param {object} todo объект с данными задачи
+   */
   const toggleComplete = async (todo) => {
     await updateDoc(doc(firestoreDB, 'todos', todo.id), {
       isCompleted: !todo.isCompleted,
     });
   };
-  //delete
+  /**
+   * Функция удаления задачи, удаляет задачу на бэке по id
+   *
+   * @memberof TodoApp
+   * @param {string} id id задачи на удаление
+   */
   const deleteTodo = async (id) => {
     await deleteDoc(doc(firestoreDB, 'todos', id));
   };
-
-  //upload
+  /**
+   * Функция загружает выбранный файл на бэк и сохраняет ссылку на
+   * него в специальный стейт. Включает индикатор успешной загрузки.
+   *
+   * Проверяет чтобы стейт с файлами был не null.
+   *
+   * Не позволяет загружать файл размером больше 2МБ, при такой
+   * попытке показывает предупреждение.
+   *
+   * @memberof TodoApp
+   */
   const uploadFile = () => {
     if (files === null) {
       return;
@@ -113,22 +176,15 @@ export default function Album() {
       getDownloadURL(snapshot.ref).then((url) => {
         setFilesUrl(url);
         setUploadStatus(true);
-        //setFilesUrl((prev) => [url, ...prev]);
       });
     });
   };
-  //get Files
-  // const filesListRef = ref(firebaseStorage, 'uploadedFiles/');
-  // useEffect(() => {
-  //   listAll(filesListRef).then((response) => {
-  //     response.items.forEach((item) => {
-  //       getDownloadURL(item).then((url) => {
-  //         setFilesUrl(url);
-  //         //setFilesUrl((prev) => [url, ...prev]);
-  //       });
-  //     });
-  //   });
-  // }, []);
+  /**
+   * Функция подготовки новой задачи, очищает инпуты
+   * и открывает модалку
+   *
+   * @memberof TodoApp
+   */
   const handleNewTask = () => {
     setTitle('');
     setDescription('');
@@ -137,7 +193,6 @@ export default function Album() {
     setUploadStatus(false);
     handleOpenAddModal();
   };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { colors, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TodoDatePicker from './TodoDatePicker';
 
 const style = {
@@ -17,7 +17,10 @@ const style = {
   display: 'flex',
   flexDirection: 'column',
 };
-
+/**
+ * Компонент модальное окно с полями ввода инфо о задаче
+ * @namespace TodoModal
+ */
 export default function BasicModal({
   openModal,
   handleCloseModal,
