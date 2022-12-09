@@ -59,6 +59,7 @@ export default function TodoApp() {
   const [todos, setTodos] = useState([]);
   const [filesUrl, setFilesUrl] = useState('');
   const [uploadStatus, setUploadStatus] = useState(false);
+  const [createdAt, setCreatedAt] = useState('');
   /**
    * Стейты для модалки добавления задачи
    * @memberof TodoApp
@@ -86,6 +87,7 @@ export default function TodoApp() {
       description,
       expDate,
       filesUrl,
+      createdAt: dayjs().valueOf(),
     });
     setFiles(null);
     handleCloseAddModal();
@@ -253,28 +255,30 @@ export default function TodoApp() {
         <Container sx={{ py: 8 }} maxWidth="md">
           <Grid container spacing={4}>
             {todos &&
-              todos.map((todo) => (
-                <TodoCard
-                  key={todo.id}
-                  todo={todo}
-                  title={title}
-                  description={description}
-                  expDate={expDate}
-                  files={files}
-                  setTitle={setTitle}
-                  setDescription={setDescription}
-                  setExpDate={setExpDate}
-                  setFiles={setFiles}
-                  uploadFile={uploadFile}
-                  deleteTodo={deleteTodo}
-                  editTodo={editTodo}
-                  toggleComplete={toggleComplete}
-                  setFilesUrl={setFilesUrl}
-                  setTodoId={setTodoId}
-                  uploadStatus={uploadStatus}
-                  setUploadStatus={setUploadStatus}
-                />
-              ))}
+              todos
+                .sort((a, b) => b.createdAt - a.createdAt)
+                .map((todo) => (
+                  <TodoCard
+                    key={todo.id}
+                    todo={todo}
+                    title={title}
+                    description={description}
+                    expDate={expDate}
+                    files={files}
+                    setTitle={setTitle}
+                    setDescription={setDescription}
+                    setExpDate={setExpDate}
+                    setFiles={setFiles}
+                    uploadFile={uploadFile}
+                    deleteTodo={deleteTodo}
+                    editTodo={editTodo}
+                    toggleComplete={toggleComplete}
+                    setFilesUrl={setFilesUrl}
+                    setTodoId={setTodoId}
+                    uploadStatus={uploadStatus}
+                    setUploadStatus={setUploadStatus}
+                  />
+                ))}
           </Grid>
         </Container>
       </main>
